@@ -28,8 +28,8 @@ class preprocess:
                 #normalize
                 dataArray = dataArray/255
                 #masking
-                #masked_img = masking.mask(dataArray)
-                masked_img = dataArray
+                masked_img = masking.mask(dataArray)
+                #masked_img = dataArray
                 plt.imshow(masked_img)
                 plt.show()
                 
@@ -56,13 +56,13 @@ class preprocess:
 class masking:
     def mask(dataArray):
         mask = np.array(np.zeros(217088))
-        mask = mask.reshape(512,424)
+        mask = mask.reshape(424,512)
         for x in range(0, 512):
             for y in range(0, 424):
-                if y < 0.5*x+131 and y > 0.5*x+8.65 and y < -1.77*x+1084.4 and y > -2.5*x+431:
-                    mask[x,y] = 1
+                if y > -0.5*x+293 and y < -0.45*x+416 and y > 1.77*x-658.6 and y < 2.5*x-8.16:
+                    mask[y,x] = 1
                 else:
-                    mask[x,y] = 0
+                    mask[y,x] = 0
         
         return dataArray*mask
     
