@@ -7,9 +7,9 @@ from joblib import dump, load
 
 from sklearn.cluster import KMeans
 
-path = "/Users/taylorbrandl/Desktop/Taylor/Python/ML_Project/Labeled_images/"
+path = "/Users/taylorbrandl/Desktop/Taylor/Python/CSCE_878/ML_Project/Crate12_z59/"
 
-mode = 'run'
+mode = 'train'
 
 data_size = 0
 #preprocess the data
@@ -71,7 +71,7 @@ class preprocess:
                 gt.append(2)
             elif label == 'Lying sternum':
                 gt.append(3)
-            elif label == 'Udder away from heat lamp' or label == 'Udder towards heat lamp' or label == 'Lying other':
+            else:
                 gt.append(4)
         return gt[:data_size]
 
