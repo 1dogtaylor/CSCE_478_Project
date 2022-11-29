@@ -4,12 +4,13 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from joblib import dump, load
+from fastprogress import master_bar, progress_bar
 
 from sklearn.cluster import KMeans
 
 path = "/Users/taylorbrandl/Desktop/Taylor/Python/CSCE_878/ML_Project/Crate12_z59/"
 
-mode = 'train'
+mode = 'run'
 
 data_size = 0
 #preprocess the data
@@ -19,8 +20,8 @@ class preprocess:
 
     def read_data(self,path):
         imgMat = np.array(np.zeros(217088))
-        
-        for filename in os.listdir(path):
+        print('Reading in data...')
+        for filename in progress_bar(os.listdir(path)):
     
             if filename.endswith(".png"): # to only get depth images
                 #image path
@@ -42,6 +43,7 @@ class preprocess:
                 #use np.vstack() to stack the vectors vertically
                 imgMat = np.vstack([imgMat,data])
         data_size = len(imgMat)
+        print('\n')
         return imgMat, data_size
 
     def split_data(self, imgMat, gt, n=0.8):
@@ -90,13 +92,15 @@ class masking:
         return cropped_img
     
 
-class Kmeans:
+class Kmeans_alg:
     def __init__(self, train_data):
         self.imgMat = train_data
     def cluster(self, n_clusters):
         #kmeans
         kmeans = KMeans(n_clusters=n_clusters, random_state=0)
+        print('Clustering data...')
         kmeans.fit(self.imgMat)
+        print('\n')
         #print("cluster centers",kmeans.cluster_centers_)
         #print("kmean labels",kmeans.labels_)
         return kmeans
@@ -120,23 +124,30 @@ class test:
         print("accuracy", accuracy)
         return accuracy
         
-data, data_size = preprocess().read_data(path)
-gt = preprocess().read_labels(path,data_size)
-print("data shape",data.shape)
-train_data, test_data, train_labels, test_labels = preprocess().split_data(data,gt)
 
-if mode == 'train':        
-    kmeans = Kmeans(train_data).cluster(5)
+if mode == 'train': 
+    data, data_size = preprocess().read_data(path)
+    gt = preprocess().read_labels(path,data_size)
+    print("data shape",data.shape)
+    train_data, test_data, train_labels, test_labels = preprocess().split_data(data,gt)       
+    kmeans = Kmeans_alg(train_data).cluster(5)
     dump(kmeans, 'kmeans_5.joblib')
     accuracy = test().return_predictions(kmeans, test_data, test_labels)
     print("accuracy",accuracy)
+
+
+
 elif mode == 'run':
-    kmeans = load('kmeans_5.joblib')
+    data, data_size = preprocess().read_data(path)
+    gt = preprocess().read_labels(path,data_size)
+    print("data shape",data.shape)
+    train_data, test_data, train_labels, test_labels = preprocess().split_data(data,gt,n=0)
+    kmeans = load('kmeans_5_bigdata.joblib')
     accuracy = test().return_predictions(kmeans, test_data, test_labels)
     print("accuracy",accuracy)
 
 
 
-
+#try db scan
 
 
